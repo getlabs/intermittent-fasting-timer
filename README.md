@@ -20,5 +20,9 @@ Example: 8, 13:00
 
 
 ## Preview
-![Preview image](https://github.com/getlabs/intermittent-fasting-timer/blob/main/preview.jpg?raw=true)
-![Parameter image](https://github.com/getlabs/intermittent-fasting-timer/blob/main/parameter.jpg?raw=true)
+
+![Preview image (english)](https://github.com/getlabs/intermittent-fasting-timer/blob/main/preview_en.jpg?raw=true)
+![Parameter image (english)](https://github.com/getlabs/intermittent-fasting-timer/blob/main/parameter_en.jpg?raw=true)
+
+![Preview image (german)](https://github.com/getlabs/intermittent-fasting-timer/blob/main/preview.jpg?raw=true)
+![Parameter image (german)](https://github.com/getlabs/intermittent-fasting-timer/blob/main/parameter.jpg?raw=true)
