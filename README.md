@@ -18,7 +18,7 @@ Example: 8, 13:00
 
 - The first number indicates the length (in hours) of your eating time. 8 => 16:8
 - Separate with comma
-- The second input is the time you break your fast
+- The second input is the time you break your fast (Format: hh:mm)
 
 
 ## Preview
