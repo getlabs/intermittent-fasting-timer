@@ -34,7 +34,7 @@ eatingTime.setHours(time[0])
 eatingTime.setMinutes(time[1])
 
 let times = [
-    [time[0], time[1]], [addHours(eatingTime, 8).getHours(), addHours(eatingTime, 8).getMinutes()]
+    [time[0], time[1]], [addHours(eatingTime, fields[0]).getHours(), addHours(eatingTime, fields[0]).getMinutes()]
 ]
 
 const headerGer = isEatingTime() ? 'Fastenzeit beginnt in:' : 'Fastenzeit endet in:'
@@ -145,7 +145,6 @@ function pad(num) {
     return ("0" + parseInt(num)).substr(-2);
 }
 
-
 function getMinOutput() {
     let now = new Date()
     const nextShip = times.find(it => it[0] > now.getHours() || it[0] == now.getHours() && it[1] >= now.getMinutes()) || times[0];
@@ -159,9 +158,8 @@ function getMinOutput() {
     const seconds = 60 - now.getSeconds();
 
     return `${pad(hours)}:${pad(minutes)}`;
-
-
 }
+
 function getMins() {
     let now = new Date()
     const nextShip = times.find(it => it[0] > now.getHours() || it[0] == now.getHours() && it[1] >= now.getMinutes()) || times[0];
@@ -175,8 +173,6 @@ function getMins() {
     const seconds = 60 - now.getSeconds();
 
     return hours * 60 + minutes;
-
-
 }
 
 function isEatingTime() {
