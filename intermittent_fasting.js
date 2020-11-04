@@ -29,79 +29,35 @@ const canvRadius = 160; // circle radius
 canvas.size = new Size(canvSize, canvSize);
 canvas.respectScreenScale = true;
 
+const eatingTime = new Date()
+eatingTime.setHours(time[0])
+eatingTime.setMinutes(time[1])
 
+let times = [
+    [time[0], time[1]], [addHours(eatingTime, 8).getHours(), addHours(eatingTime, 8).getMinutes()]
+]
 
-let eatingBegin = new Date()
-eatingBegin.setHours(time[0])
-eatingBegin.setMinutes(time[1])
-
-let nextEatingBegin = new Date()
-nextEatingBegin.setDate(new Date().getDate() + 1)
-nextEatingBegin.setHours(eatingBegin.getHours())
-nextEatingBegin.setMinutes(0)
-
-let eatingEnd = addHours(eatingBegin, fields[0]);
-eatingEnd.setMinutes(eatingBegin.getMinutes());
-
-let originalEatingBeginn = eatingBegin
-
-if (!isTimeBetween(eatingBegin, eatingEnd) && isDateBefore(eatingBegin)) {
-    console.log('set begin to tomorrow')
-    eatingBegin = nextEatingBegin
-}
-
-var diffMsEating = (eatingBegin - new Date());
-var diffHrsEating = Math.floor((diffMsEating % 86400000) / 3600000);
-var diffMinsEating = Math.round(((diffMsEating % 86400000) % 3600000) / 60000);
-
-var diffMsEatingEnd = (eatingBegin - eatingEnd);
-var diffHrsEatingEnd = Math.floor((diffMsEatingEnd % 86400000) / 3600000);
-var diffMinsEatingEnd = Math.round(((diffMsEatingEnd % 86400000) % 3600000) / 60000);
-
-let minsRemainingEating = Math.floor(diffMinsEating + (diffHrsEating * 60))
-let minsRemainingEatingEnd = Math.floor(diffMinsEatingEnd + (diffHrsEatingEnd * 60))
+const headerGer = isEatingTime() ? 'Fastenzeit beginnt in:' : 'Fastenzeit endet in:'
+const headerEng = isEatingTime() ? 'Fasting period starting in:' : 'Fasting period ends in:'
 
 let totalEatingMins = fields[0] * 60
 let totalFastingMins = (24 - fields[0]) * 60
 
-let minsRemainingEatingCircle = Math.floor((minsRemainingEating / totalEatingMins * 100) * 3.6)
+let minsRemainingCircle = isEatingTime() ? Math.floor((getMins() / totalEatingMins * 100) * 3.6) : Math.floor((getMins() / totalFastingMins * 100) * 3.6)
 
-let minsRemainingEatingEndCircle = Math.abs((minsRemainingEating / totalFastingMins * 100) * 3.6)
-
+let dayRadiusOffset = 60;
 
 /*
-BEGIN Widget Layout
+START Widget Layout
 */
 
 let widget = new ListWidget();
 widget.setPadding(0, 5, 1, 0);
-
-
-let dayRadiusOffset = 60;
-
 makeCircle(dayRadiusOffset,
-    !isFastingPeriod() ? bgCircleColoreatingEnd : bgCircleColorFasting,
-    (!isTimeBetween(originalEatingBeginn, eatingEnd) && !isDateBefore(originalEatingBeginn)) ? progressCircleColorFasting : progressCircleColoreatingEnd,
-    !isFastingPeriod() ? Math.abs(minsRemainingEatingCircle) : Math.abs(minsRemainingEatingEndCircle),
+    isEatingTime() ? bgCircleColoreatingEnd : bgCircleColorFasting,
+    isEatingTime() ? progressCircleColorFasting : progressCircleColoreatingEnd,
+    Math.floor(minsRemainingCircle),
     circleTextColor)
-
-let outputHrs
-let outputMin
-
-if (!isFastingPeriod()) {
-    outputHrs = Math.abs(diffHrsEatingEnd) > 9 ? Math.abs(diffHrsEatingEnd).toString() : '0' + Math.abs(diffHrsEatingEnd)
-} else {
-    outputHrs = diffHrsEating > 9 ? diffHrsEating.toString() : '0' + Math.abs(diffHrsEating)
-}
-
-if (!isFastingPeriod()) {
-    outputMin = Math.abs(diffMinsEatingEnd) > 9 ? Math.abs(diffMinsEatingEnd).toString() : '0' + Math.abs(diffMinsEatingEnd)
-} else {
-    outputMin = diffMinsEating > 9 ? diffMinsEating.toString() : '0' + Math.abs(diffMinsEating)
-}
-
-const headerGer = (!isTimeBetween(originalEatingBeginn, eatingEnd) && !isDateBefore(originalEatingBeginn)) ? 'Fastenzeit beginnt in:' : 'Fastenzeit endet in:'
-const headerEng = (!isTimeBetween(originalEatingBeginn, eatingEnd) && !isDateBefore(originalEatingBeginn)) ? 'Fasting period starting in:' : 'Fasting period ends in:'
 
 drawText(
     lang === 'de' ? headerGer : headerEng,
@@ -109,7 +65,7 @@ drawText(
     20, 22
 )
 drawText(
-    outputHrs + ':' + outputMin,
+    getMinOutput(),
     circleTextColor,
     140, 40
 )
@@ -185,28 +141,53 @@ function cosDeg(deg) {
     return Math.cos((deg * Math.PI) / 180);
 }
 
-function isTimeBetween(startTime, endTime) {
-    if (Date.parse(new Date()) <= Date.parse(endTime) && Date.parse(new Date()) >= Date.parse(startTime)) {
-        return true;
-    }
-    return false
+function pad(num) {
+    return ("0" + parseInt(num)).substr(-2);
+}
+
+
+function getMinOutput() {
+    let now = new Date()
+    const nextShip = times.find(it => it[0] > now.getHours() || it[0] == now.getHours() && it[1] >= now.getMinutes()) || times[0];
+
+    let hours = nextShip[0] - now.getHours();
+    let minutes = nextShip[1] - now.getMinutes();
+
+    if (minutes < 0) { minutes += 60; hours -= 1 }
+    if (hours < 0) { hours += 24; }
+
+    const seconds = 60 - now.getSeconds();
+
+    return `${pad(hours)}:${pad(minutes)}`;
+
+
+}
+function getMins() {
+    let now = new Date()
+    const nextShip = times.find(it => it[0] > now.getHours() || it[0] == now.getHours() && it[1] >= now.getMinutes()) || times[0];
+
+    let hours = nextShip[0] - now.getHours();
+    let minutes = nextShip[1] - now.getMinutes();
+
+    if (minutes < 0) { minutes += 60; hours -= 1 }
+    if (hours < 0) { hours += 24; }
+
+    const seconds = 60 - now.getSeconds();
+
+    return hours * 60 + minutes;
+
+
+}
+
+function isEatingTime() {
+    let now = new Date()
+    const nextShip = times.findIndex(it => it[0] > now.getHours() || it[0] == now.getHours() && it[1] >= now.getMinutes()) || times[0];
+
+    return nextShip === 1 ? true : false;
 }
 
 function addHours(date, h) {
-    date.setTime(date.getTime() + (h * 60 * 60 * 1000));
-    return date;
-}
-
-function isDateBefore(date) {
-    var now = new Date();
-
-    if (date < now) {
-        return true
-    } else {
-        return false
-    }
-}
-
-function isFastingPeriod() {
-    return !isTimeBetween(eatingBegin, eatingEnd) && !isDateBefore(eatingBegin)
+    newDate = new Date()
+    newDate.setTime(date.getTime() + (h * 60 * 60 * 1000));
+    return newDate;
 }
