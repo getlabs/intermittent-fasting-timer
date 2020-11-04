@@ -6,6 +6,8 @@ A scriptable widget which displays a intermittent fastings timer
 
 [What is Intermittent Fasting?](https://en.wikipedia.org/wiki/Intermittent_fasting) 
 
+[Scriptable](https://scriptable.app)
+
 
 ## Code
 [intermittent_fasting.js](https://github.com/getlabs/intermittent-fasting-timer/blob/main/intermittent_fasting.js)
@@ -14,7 +16,7 @@ A scriptable widget which displays a intermittent fastings timer
 
 Example: 8, 13:00
 
-- The first number indicates the length (in hours) of your eating time. 8 => 18:6 
+- The first number indicates the length (in hours) of your eating time. 8 => 16:8
 - Separate with comma
 - The second input is the time you break your fast
 
